@@ -1,0 +1,50 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract MarquezDegenToken is ERC20, Ownable {
+  event TokensMinted(address indexed receiver, uint amount);
+  enum SellingItem {
+    DEGEN_TSHIRT,
+    DEGEN_SHORT,
+    DEGEN_CAPS,
+    DEGEN_SHOES
+  }
+  mapping(SellingItem => uint) public MarquezProductShopPrices;
+
+  constructor() ERC20("Marquez", "MRQZ") Ownable(msg.sender) {
+    _mint(msg.sender, 20000 * 20**decimals());
+
+    MarquezProductShopPrices[SellingItem.DEGEN_TSHIRT] = 300;
+    MarquezProductShopPrices[SellingItem.DEGEN_SHORT] = 250;
+    MarquezProductShopPrices[SellingItem.DEGEN_CAPS] = 470;
+    MarquezProductShopPrices[SellingItem.DEGEN_SHOES] = 2000;
+  }
+
+  function mint(address _seller, uint _amount) public onlyOwner {
+    _mint(_seller, _amount);
+    emit TokensMinted(_seller, _amount);
+  }
+
+  function marquezTokens(address _seller, uint _amount) public {
+    _transfer(msg.sender, _seller, _amount);
+  }
+
+  function redeemTokens(SellingItem _item) public {
+    uint256 itemPrice = MarquezProductShopPrices[_item];
+    require(balanceOf(msg.sender) >= itemPrice, "You have insufficient balance, try again");
+
+    _burn(msg.sender, itemPrice);
+  }
+
+  function degenTokenBalance(address _buyer) public view returns (uint) {
+    return balanceOf(_buyer);
+  }
+
+  function burnTokens(uint _amount) public {
+    require(balanceOf(msg.sender) >= _amount, "You have insufficient balance, try again");
+    _burn(msg.sender, _amount);
+  }
+}
