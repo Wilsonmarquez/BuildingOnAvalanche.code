@@ -1,4 +1,4 @@
-The Import Statments Import necessary dependencies and contract ABI.
+The Import Statements Import necessary dependencies and contract ABI.
 
 The Set Contract Set the contract address, account address, and private key. These are used for interacting with the contract.
 
